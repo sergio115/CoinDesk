@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:CoinDesk.ViewModels"
+             x:Class="CoinDesk.Views.CurrencyPage">
+    <Grid Padding="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="7*" />
+        </Grid.RowDefinitions>
+
+        <StackLayout>
+            <Entry Placeholder="Code (USD)" 
+                   Text="{Binding NewCurrency.Code, Mode=TwoWay}" />
+            <Entry Placeholder="Symbol ($)" 
+                   Text="{Binding NewCurrency.Symbol, Mode=TwoWay}" />
+            <Entry Placeholder="Description" 
+                   Text="{Binding NewCurrency.Description, Mode=TwoWay}" />
+            <Entry Placeholder="Rate" 
+                   Text="{Binding NewCurrency.Rate, Mode=TwoWay}" 
+                   Keyboard="Numeric"/>
+            <Button Text="Add or Update"
+                    Command="{Binding AddCommand}"/>
+        </StackLayout>
+        <CollectionView Grid.Row="1" 
+                        ItemsSource="{Binding Currencies}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding NewCurrency}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Delete"
+                                           BackgroundColor="Red"
+                                           Command="{Binding Source={RelativeSource 
+                                                            AncestorType={x:Type local:CurrencyViewModel}}, 
+                                                            Path=DeleteCommand}"
+                                           CommandParameter="{Binding .}"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Grid BackgroundColor="LightSalmon" Margin="4" Padding="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Label Text="{Binding Code}" 
+                                   FontSize="Large"
+                                   Grid.Column="0"
+                                   Grid.Row="0" />
+                            <Label Text="{Binding Symbol}"
+                                   FontSize="Large"
+                                   Grid.Column="1" 
+                                   Grid.Row="0"/>
+                            <Label Text="{Binding Description}" 
+                                   FontSize="Large"
+                                   Grid.Column="0"
+                                   Grid.Row="1" />
+                            <Label Text="{Binding Rate}" 
+                                   FontSize="Large"
+                                   Grid.Column="1" 
+                                   Grid.Row="1"/>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
