@@ -22,5 +22,8 @@ namespace CoinDesk
                 return Path.Combine(basePath, DatabaseFileName);
             }
         }
+
+        public static string BaseAddress = "https://api.coindesk.com";
+        public static string APIUrl = BaseAddress + "/v1/bpi/currentprice.json";
     }
 }

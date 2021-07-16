@@ -1,7 +1,9 @@
 ﻿using CoinDesk.Models;
+using CoinDesk.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -9,6 +11,7 @@ namespace CoinDesk.ViewModels
 {
     public class CurrencyViewModel : BaseViewModel
     {
+        public static DataManager DatMan { get; private set; }
         private Currency _currency;
         public Currency NewCurrency
         {
@@ -71,20 +74,35 @@ namespace CoinDesk.ViewModels
             NewCurrency.Rate = this.Rate;
 
             Refresh();
-            AddCommand = new Command(async () =>
-            {
-                App.CurrencyRepository.AddOrUpdate(NewCurrency);
-                Refresh();
-            });
-            DeleteCommand = new Command(async (currency) =>
-            {
-                App.CurrencyRepository.Delete(((Currency)currency).IdCurrency);
-                Refresh();
-            });
+            AddCommand = new Command(async () => await AddOrUpdate());
+            DeleteCommand = new Command(async (currency) => await Delete(((Currency)currency).IdCurrency));
         }
-        private void Refresh()
+        private async Task AddOrUpdate()
+        {
+            App.CurrencyRepository.AddOrUpdate(NewCurrency);
+            await Refresh ();
+            //await Task.CompletedTask;
+        }        
+        private async Task Delete(int IdCurrency)
+        {
+            App.CurrencyRepository.Delete(IdCurrency);
+            await Refresh();
+            //await Task.CompletedTask;
+        }
+        private async Task Refresh()
         {
             Currencies = App.CurrencyRepository.GetAll();
+
+            if (Currencies.Count.Equals(0))
+            {
+                DatMan = new DataManager(new CoinDeskService());
+                Currencies = await DatMan.GetFromAPI();
+                foreach (var currency in Currencies)
+                {
+                    App.CurrencyRepository.AddOrUpdate(currency);
+                }
+            }
+
             NewCurrency = new Currency();
             NewCurrency.IdCurrency = 0;
             NewCurrency.Code = "";
